@@ -57,11 +57,13 @@ class Model(nn.Module):
             val_z, idx_z = torch.max(joint_heatmap_out,2)
             val_zy, idx_zy = torch.max(val_z,2)
             val_zyx, joint_x = torch.max(val_zy,2)
+
             joint_x = joint_x[:,:,None]
             joint_y = torch.gather(idx_zy, 2, joint_x)
             joint_z = torch.gather(idx_z, 2, joint_y[:,:,:,None].repeat(1,1,1,cfg.output_hm_shape[1]))[:,:,0,:]
             joint_z = torch.gather(joint_z, 2, joint_x)
             joint_coord_out = torch.cat((joint_x, joint_y, joint_z),2).float()
+
             out['joint_coord'] = joint_coord_out
             out['rel_root_depth'] = rel_root_depth_out
             out['hand_type'] = hand_type

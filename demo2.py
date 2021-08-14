@@ -19,6 +19,7 @@ from pth.common.model import get_model
 from pth.common.utils.preprocessing import load_img, load_skeleton, process_bbox, generate_patch_image, transform_input_to_output_space, trans_point2d
 from pth.common.utils.vis import vis_keypoints, vis_3d_keypoints
 
+
 if __name__ == '__main__':
     joint_num = 21 # single hand
     root_joint_idx = {'right': 20, 'left': 41}
@@ -31,8 +32,14 @@ if __name__ == '__main__':
     print('Load checkpoint from {}'.format(model_path))
     model = get_model('test', joint_num)
     ckpt = torch.load(model_path, map_location=torch.device('cpu'))
+    state_dict = model.state_dict()
+
+    for k in ckpt['network'].keys():
+        t = k.replace('module.', '')
+        state_dict[t] = ckpt['network'][k]
+
     model.cpu()
-    model.load_state_dict(ckpt['network'])
+    model.load_state_dict(state_dict, strict=False)
     model.eval()
 
     # prepare input image
@@ -52,12 +59,11 @@ if __name__ == '__main__':
     inputs = {'img': img}
     targets = {}
     meta_info = {}
-    with torch.no_grad():
-        out = model(inputs, targets, meta_info, 'test')
-    img = img[0].cpu().numpy().transpose(1,2,0) # cfg.input_img_shape[1], cfg.input_img_shape[0], 3
-    joint_coord = out['joint_coord'][0].cpu().numpy() # x,y pixel, z root-relative discretized depth
-    rel_root_depth = out['rel_root_depth'][0].cpu().numpy() # discretized depth
-    hand_type = out['hand_type'][0].cpu().numpy() # handedness probability
+    out = model(inputs, targets, meta_info, 'test')
+    img = img[0].cpu().numpy().transpose(1,2,0)
+    joint_coord = out['joint_coord'][0].detach().cpu().numpy()
+    rel_root_depth = out['rel_root_depth'][0].detach().cpu().numpy()
+    hand_type = out['hand_type'][0].detach().cpu().numpy()
 
     # restore joint coord to original image space and continuous depth space
     joint_coord[:,0] = joint_coord[:,0] / cfg.output_hm_shape[2] * cfg.input_img_shape[1]
@@ -89,10 +95,6 @@ if __name__ == '__main__':
     vis_img = original_img.copy()[:,:,::-1].transpose(2,0,1)
     vis_img = vis_keypoints(vis_img, joint_coord, joint_valid, skeleton, filename, save_path='.')
 
-    # visualize joint coord in 3D space
-    # The 3D coordinate in here consists of x,y pixel and z root-relative depth.
-    # To make x,y, and z in real unit (e.g., mm), you need to know camera intrincis and root depth.
-    # The root depth can be obtained from RootNet (https://github.com/mks0601/3DMPPE_ROOTNET_RELEASE)
     filename = 'result_3d'
     vis_3d_keypoints(joint_coord, joint_valid, skeleton, filename)
 
