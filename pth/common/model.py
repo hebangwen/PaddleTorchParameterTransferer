@@ -8,9 +8,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from nets.module import BackboneNet, PoseNet
-from nets.loss import JointHeatmapLoss, HandTypeLoss, RelRootDepthLoss
-from config import cfg
+from pth.common.nets.module import BackboneNet, PoseNet
+from pth.common.nets.loss import JointHeatmapLoss, HandTypeLoss, RelRootDepthLoss
+from pth.common.config import cfg
 import math
 
 class Model(nn.Module):

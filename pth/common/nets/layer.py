@@ -11,7 +11,7 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 import math
-from config import cfg
+from pth.common.config import cfg
 
 def make_linear_layers(feat_dims, relu_final=True):
     layers = []

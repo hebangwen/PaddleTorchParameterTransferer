@@ -1,9 +1,9 @@
 import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
-from dnns.internet.config import cfg
-from dnns.internet.common.nets.layer import make_linear_layers,make_conv_layers,make_deconv_layers
-from dnns.internet.common.nets.resnet import ResNetBackbone
+from ..config import cfg
+from pdparams.common.nets.layer import make_linear_layers,make_conv_layers,make_deconv_layers
+from pdparams.common.nets.resnet import ResNetBackbone
 
 
 

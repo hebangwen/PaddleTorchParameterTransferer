@@ -8,9 +8,9 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from config import cfg
-from nets.layer import make_linear_layers, make_conv_layers, make_deconv_layers, make_upsample_layers
-from nets.resnet import ResNetBackbone
+from pth.common.config import cfg
+from pth.common.nets.layer import make_linear_layers, make_conv_layers, make_deconv_layers, make_upsample_layers
+from pth.common.nets.resnet import ResNetBackbone
 import math
 
 class BackboneNet(nn.Module):

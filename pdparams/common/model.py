@@ -1,8 +1,8 @@
 import paddle
 import paddle.nn as nn
-from nets.module import BackboneNet,PoseNet
-from nets.loss import JointHeatmapLoss,HandTypeLoss,RelRootDepthLoss
-from config import cfg
+from pdparams.common.nets.module import BackboneNet,PoseNet
+from pdparams.common.nets.loss import JointHeatmapLoss,HandTypeLoss,RelRootDepthLoss
+from pdparams.common.config import cfg
 
 
 
