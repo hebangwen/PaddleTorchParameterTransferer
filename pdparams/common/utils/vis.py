@@ -15,7 +15,7 @@ matplotlib.use('tkagg')
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from dnns.internet.config import cfg
+from pdparams.common.config import cfg
 from PIL import Image, ImageDraw
 
 

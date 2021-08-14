@@ -8,7 +8,7 @@
 import os
 import cv2
 import numpy as np
-from dnns.internet.config import cfg
+from pdparams.common.config import cfg
 import random
 import math
 

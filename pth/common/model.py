@@ -20,7 +20,7 @@ class Model(nn.Module):
         # modules
         self.backbone_net = backbone_net
         self.pose_net = pose_net
-          
+
         # loss functions
         self.joint_heatmap_loss = JointHeatmapLoss()
         self.rel_root_depth_loss = RelRootDepthLoss()

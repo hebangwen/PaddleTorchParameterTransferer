@@ -38,7 +38,7 @@ class PoseNet(nn.Layer):
 
     def soft_argmax_1d(self, heatmap1d):
         heatmap1d = F.softmax(heatmap1d, 1)
-        temp = paddle.arange(cfg.output_root_hm_shape).astype(paddle.float32).reshape((1, -1)).cuda()
+        temp = paddle.arange(cfg.output_root_hm_shape).astype(paddle.float32).reshape((1, -1))
         accu = heatmap1d * temp
         coord = accu.sum(axis=1)
         return coord

@@ -8,7 +8,7 @@
 import os
 import cv2
 import numpy as np
-from config import cfg
+from pth.common.config import cfg
 import random
 import math
 
