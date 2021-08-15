@@ -24,5 +24,28 @@ def compare_linear():
     print(np.linalg.norm(x1 - x2))
 
 
+def compare_gather():
+    shape = (5, 1, 5)
+    data = np.random.randint(0, 100, shape)
+
+    t1 = paddle.to_tensor(data)
+    t2 = torch.from_numpy(data)
+    print(t1)
+    print(t2)
+
+    # 0, 1, 2, 3, 4
+    # 4, 3, 2, 1, 0
+    dim1 = paddle.to_tensor([4, 3, 2])
+    dim2 = torch.tensor([4, 3, 2]).repeat(5, 1, 1)
+    print(dim1)
+    print(dim2)
+
+    out1 = paddle.gather(t1, dim1, 2)
+    out2 = torch.gather(t2, 2, dim2)
+
+    print(out1)
+    print(out2)
+
+
 if __name__ == '__main__':
-    compare_linear()
+    compare_gather()

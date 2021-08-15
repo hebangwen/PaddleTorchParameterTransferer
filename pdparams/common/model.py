@@ -58,12 +58,24 @@ class Model(nn.Layer):
             val_zy, idx_zy = paddle.max(val_z, axis=2), paddle.argmax(val_z, axis=2)
             val_zyx, joint_x = paddle.max(val_zy, axis=2), paddle.argmax(val_zy, axis=2)
 
+            index_x = paddle.squeeze(joint_x)
+            # joint_x = joint_x[:, :, None]
             joint_x = paddle.unsqueeze(joint_x, axis=-1)
-            joint_y = paddle.gather(idx_zy, joint_x, 2)
-            joint_z = paddle.gather(idx_z, paddle.unsqueeze(joint_y, axis=-1).repeat(1, 1, 1, cfg.output_hm_shape[1]), 2)[:, :, 0, :]
-            joint_z = paddle.gather(joint_z, joint_x, 2)
 
-            joint_coord_out = paddle.concat((joint_x, joint_y, joint_z), 2).float()
+            # joint_y = torch.gather(idx_zy, 2, joint_x)
+            joint_y = paddle.zeros(shape=[idx_zy.shape[0], idx_zy.shape[1], 1], dtype=idx_zy.dtype)
+            for idx, i in enumerate(index_x):
+                joint_y[0, idx, 0] = idx_zy[0, idx, i]
+
+            # 按照joint_y(行), joint_x(列)的内容去取idx_z中的某一元素
+            # joint_z = torch.gather(idx_z, 2, joint_y[:,:,:,None].repeat(1,1,1,cfg.output_hm_shape[1]))[:,:,0,:]
+            # joint_z = torch.gather(joint_z, 2, joint_x)
+            joint_z = paddle.zeros(shape=[idx_z.shape[0], idx_z.shape[1], 1], dtype=idx_z.dtype)
+            index_y = paddle.squeeze(joint_y)
+            for idx, (ix, iy) in enumerate(zip(index_x, index_y)):
+                joint_z[0, idx, 0] = idx_z[0, idx, iy, ix]
+
+            joint_coord_out = paddle.concat((joint_x, joint_y, joint_z), 2).astype(paddle.float32)
             out['joint_coord'] = joint_coord_out
             out['rel_root_depth'] = rel_root_depth_out
             out['hand_type'] = hand_type
