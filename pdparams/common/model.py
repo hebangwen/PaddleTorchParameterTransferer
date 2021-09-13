@@ -58,22 +58,25 @@ class Model(nn.Layer):
             val_zy, idx_zy = paddle.max(val_z, axis=2), paddle.argmax(val_z, axis=2)
             val_zyx, joint_x = paddle.max(val_zy, axis=2), paddle.argmax(val_zy, axis=2)
 
+            batch_size = joint_heatmap_out.shape[0]
             index_x = paddle.squeeze(joint_x)
             # joint_x = joint_x[:, :, None]
             joint_x = paddle.unsqueeze(joint_x, axis=-1)
 
             # joint_y = torch.gather(idx_zy, 2, joint_x)
             joint_y = paddle.zeros(shape=[idx_zy.shape[0], idx_zy.shape[1], 1], dtype=idx_zy.dtype)
-            for idx, i in enumerate(index_x):
-                joint_y[0, idx, 0] = idx_zy[0, idx, i]
+            for i in range(batch_size):
+                for idx, ix in enumerate(index_x[i]):
+                    joint_y[i, idx, 0] = idx_zy[i, idx, ix]
 
             # 按照joint_y(行), joint_x(列)的内容去取idx_z中的某一元素
             # joint_z = torch.gather(idx_z, 2, joint_y[:,:,:,None].repeat(1,1,1,cfg.output_hm_shape[1]))[:,:,0,:]
             # joint_z = torch.gather(joint_z, 2, joint_x)
             joint_z = paddle.zeros(shape=[idx_z.shape[0], idx_z.shape[1], 1], dtype=idx_z.dtype)
             index_y = paddle.squeeze(joint_y)
-            for idx, (ix, iy) in enumerate(zip(index_x, index_y)):
-                joint_z[0, idx, 0] = idx_z[0, idx, iy, ix]
+            for i in range(batch_size):
+                for idx, (ix, iy) in enumerate(zip(index_x[i], index_y[i])):
+                    joint_z[i, idx, 0] = idx_z[i, idx, iy, ix]
 
             joint_coord_out = paddle.concat((joint_x, joint_y, joint_z), 2).astype(paddle.float32)
             out['joint_coord'] = joint_coord_out

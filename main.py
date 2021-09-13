@@ -21,7 +21,11 @@ if __name__ == '__main__':
     paddle_model = get_paddle_model('train', 21)
     torch_model = get_torch_model('train', 21)
 
-    torch_weight = torch.load('weights/snapshot_20.pth.tar', map_location=torch.device('cpu'))['network']
+    snapshot = torch.load('weights/snapshot_20.pth.tar', map_location=torch.device('cpu'))
+    torch_weight = snapshot['network']
+    epoch = snapshot["epoch"]
+    optim = snapshot["optimizer"]
+
     # paddle实现的网络没有`module`变量保存, 所以需要修改键值对才能传送
     paddle_weight = paddle_model.state_dict()
     # assert len(torch_weight) == len(paddle_weight), '权重参数应该相等才能实现替换'
@@ -74,5 +78,12 @@ if __name__ == '__main__':
     print(count)
     paddle_model.load_dict(paddle_weight)
     paddle.save(paddle_weight, 'weights/interhand.pdparams')
+
+    # 迁移优化器
+    optimizer = paddle.optimizer.Adam(parameters=paddle_model.parameters(), learning_rate=0.01)
+    # optimizer.set_state_dict(optim)
+
+    print(optim["param_groups"])
+    print(optimizer.state_dict())
 
     print('done!')
