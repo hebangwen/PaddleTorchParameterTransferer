@@ -59,24 +59,28 @@ class Model(nn.Layer):
             val_zyx, joint_x = paddle.max(val_zy, axis=2), paddle.argmax(val_zy, axis=2)
 
             batch_size = joint_heatmap_out.shape[0]
+            num_joint = joint_heatmap_out.shape[1] // 2
             index_x = paddle.squeeze(joint_x)
-            # joint_x = joint_x[:, :, None]
             joint_x = paddle.unsqueeze(joint_x, axis=-1)
 
-            # joint_y = torch.gather(idx_zy, 2, joint_x)
-            joint_y = paddle.zeros(shape=[idx_zy.shape[0], idx_zy.shape[1], 1], dtype=idx_zy.dtype)
-            for i in range(batch_size):
-                for idx, ix in enumerate(index_x[i]):
-                    joint_y[i, idx, 0] = idx_zy[i, idx, ix]
-
-            # 按照joint_y(行), joint_x(列)的内容去取idx_z中的某一元素
-            # joint_z = torch.gather(idx_z, 2, joint_y[:,:,:,None].repeat(1,1,1,cfg.output_hm_shape[1]))[:,:,0,:]
-            # joint_z = torch.gather(joint_z, 2, joint_x)
-            joint_z = paddle.zeros(shape=[idx_z.shape[0], idx_z.shape[1], 1], dtype=idx_z.dtype)
+            shape = (-1, 1) if batch_size > 1 else (-1, )
+            idx = paddle.concat((
+                paddle.arange(0, batch_size).reshape(shape).expand_as(index_x).reshape((-1, 1)),
+                paddle.arange(0, num_joint * 2).expand_as(index_x).reshape((-1, 1)),
+                index_x.reshape((-1, 1))
+            ),
+                axis=1)
+            joint_y = paddle.gather_nd(idx_zy, idx).reshape((batch_size, num_joint * 2, 1))
             index_y = paddle.squeeze(joint_y)
-            for i in range(batch_size):
-                for idx, (ix, iy) in enumerate(zip(index_x[i], index_y[i])):
-                    joint_z[i, idx, 0] = idx_z[i, idx, iy, ix]
+
+            idx = paddle.concat((
+                paddle.arange(0, batch_size).reshape(shape).expand_as(index_x).reshape((-1, 1)),
+                paddle.arange(0, num_joint * 2).expand_as(index_x).reshape((-1, 1)),
+                index_y.reshape((-1, 1)),
+                index_x.reshape((-1, 1))
+            ),
+                axis=1)
+            joint_z = paddle.gather_nd(idx_z, idx).reshape((batch_size, num_joint * 2, 1))
 
             joint_coord_out = paddle.concat((joint_x, joint_y, joint_z), 2).astype(paddle.float32)
             out['joint_coord'] = joint_coord_out
