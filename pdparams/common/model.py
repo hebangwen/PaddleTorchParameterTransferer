@@ -59,28 +59,28 @@ class Model(nn.Layer):
             val_zyx, joint_x = paddle.max(val_zy, axis=2), paddle.argmax(val_zy, axis=2)
 
             batch_size = joint_heatmap_out.shape[0]
-            num_joint = joint_heatmap_out.shape[1] // 2
+            num_joints = joint_heatmap_out.shape[1]
             index_x = paddle.squeeze(joint_x)
             joint_x = paddle.unsqueeze(joint_x, axis=-1)
 
             shape = (-1, 1) if batch_size > 1 else (-1, )
             idx = paddle.concat((
                 paddle.arange(0, batch_size).reshape(shape).expand_as(index_x).reshape((-1, 1)),
-                paddle.arange(0, num_joint * 2).expand_as(index_x).reshape((-1, 1)),
+                paddle.arange(0, num_joints).expand_as(index_x).reshape((-1, 1)),
                 index_x.reshape((-1, 1))
             ),
                 axis=1)
-            joint_y = paddle.gather_nd(idx_zy, idx).reshape((batch_size, num_joint * 2, 1))
+            joint_y = paddle.gather_nd(idx_zy, idx).reshape((batch_size, num_joints, 1))
             index_y = paddle.squeeze(joint_y)
 
             idx = paddle.concat((
                 paddle.arange(0, batch_size).reshape(shape).expand_as(index_x).reshape((-1, 1)),
-                paddle.arange(0, num_joint * 2).expand_as(index_x).reshape((-1, 1)),
+                paddle.arange(0, num_joints).expand_as(index_x).reshape((-1, 1)),
                 index_y.reshape((-1, 1)),
                 index_x.reshape((-1, 1))
             ),
                 axis=1)
-            joint_z = paddle.gather_nd(idx_z, idx).reshape((batch_size, num_joint * 2, 1))
+            joint_z = paddle.gather_nd(idx_z, idx).reshape((batch_size, num_joints, 1))
 
             joint_coord_out = paddle.concat((joint_x, joint_y, joint_z), 2).astype(paddle.float32)
             out['joint_coord'] = joint_coord_out

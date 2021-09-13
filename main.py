@@ -79,7 +79,7 @@ if __name__ == '__main__':
     paddle_model.load_dict(paddle_weight)
     paddle.save(paddle_weight, 'weights/interhand.pdparams')
 
-    # 迁移优化器
+    # TODO: 迁移优化器
     optimizer = paddle.optimizer.Adam(parameters=paddle_model.parameters(), learning_rate=0.01)
     # optimizer.set_state_dict(optim)
 
