@@ -15,3 +15,11 @@ PyTorch weights can be downloaded from the source repository.
 | :--: | :--: | :--: |
 | `concat`&`gather_nd` | 0.00s | 0.00s|
 | `for-loop` | 0.44s | 0.59s|
+
+There is a difference between the pytorch model output heatmap and the transferred paddlepaddle model output heatmap. 
+Detail information can be shown by running `heatmap_compare.py` or `resnet_compare.py`.
+
+| model | heatmap_diff |
+| :---: | :--: |
+| interhand | 0.0157 |
+| resnet | 0.000181 |

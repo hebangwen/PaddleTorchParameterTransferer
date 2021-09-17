@@ -75,8 +75,30 @@ if __name__ == "__main__":
     torch_model.eval()
     paddle_model.eval()
 
+    def forward(self, x):
+        # See note [TorchScript super()]
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        return x
+
+    # remove full connection and keep heatmap
+    del torch_model.avgpool
+    del torch_model.fc
+    torch_model.forward = forward
+
+    del paddle_model.avgpool
+    del paddle_model.fc
+    paddle_model.forward = forward
+
     inputs = torch.randn((1, 3, 224, 224)).detach().cpu().numpy()
-    torch_output = torch_model(torch.tensor(inputs)).detach().cpu().numpy()
-    paddle_output = paddle_model(paddle.to_tensor(inputs)).detach().cpu().numpy()
+    torch_output = torch_model(torch_model, torch.tensor(inputs)).detach().cpu().numpy()
+    paddle_output = paddle_model(paddle_model, paddle.to_tensor(inputs)).detach().cpu().numpy()
     dist = np.linalg.norm(torch_output - paddle_output)
     print(dist)
