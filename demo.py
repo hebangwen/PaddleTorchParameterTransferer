@@ -39,12 +39,13 @@ if __name__ == '__main__':
     transform = _transforms.Compose([
         _transforms.ToTensor(),
     ])
-    img_path = 'input.jpg'
+    img_path = 'test2.jpg'
     original_img = cv2.imread(img_path)
     original_img_height, original_img_width = original_img.shape[:2]
 
     # prepare bbox
-    bbox = [69, 137, 165, 153] # xmin, ymin, width, height
+    # bbox = [69, 137, 165, 153] # xmin, ymin, width, height
+    bbox = [189, 13, 764, 526] # test2.jpg
     bbox = process_bbox(bbox, (original_img_height, original_img_width, original_img_height))
     img, trans, inv_trans = generate_patch_image(original_img, bbox, False, 1.0, 0.0, cfg.input_img_shape)
     img = transform(img.astype(np.float32)) / 255
@@ -85,6 +86,7 @@ if __name__ == '__main__':
         joint_valid[joint_type['left']] = 1
 
     print('Right hand exist: ' + str(right_exist) + ' Left hand exist: ' + str(left_exist))
+    np.save("demo_coord.npy", joint_coord)
 
     # visualize joint coord in 2D space
     filename = 'result_2d.jpg'

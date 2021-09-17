@@ -53,6 +53,9 @@ class Model(nn.Layer):
             loss['hand_type'] = self.hand_type_loss(hand_type, targets['hand_type'], meta_info['hand_type_valid'])
             return loss
         elif mode == 'test':
+            import numpy as np
+            np.save("demo_heatmap.npy", joint_heatmap_out.detach().cpu().numpy())
+
             out = {}
             val_z, idx_z = paddle.max(joint_heatmap_out, axis=2), paddle.argmax(joint_heatmap_out, axis=2)
             val_zy, idx_zy = paddle.max(val_z, axis=2), paddle.argmax(val_z, axis=2)

@@ -11,13 +11,13 @@ class BackboneNet(nn.Layer):
 
     def __init__(self):
         super(BackboneNet,self).__init__()
-        self.resnet=ResNetBackbone(cfg.resnet_type)
+        self.resnet = ResNetBackbone(cfg.resnet_type)
 
     def init_weights(self):
         self.resnet.init_weights()
 
     def forward(self, img):
-        img_feat=self.resnet(img)
+        img_feat = self.resnet(img)
         return img_feat
 
 

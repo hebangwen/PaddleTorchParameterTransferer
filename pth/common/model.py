@@ -53,6 +53,9 @@ class Model(nn.Module):
             loss['hand_type'] = self.hand_type_loss(hand_type, targets['hand_type'], meta_info['hand_type_valid'])
             return loss
         elif mode == 'test':
+            import numpy as np
+            np.save("demo2_heatmap.npy", joint_heatmap_out.detach().cpu().numpy())
+
             out = {}
             val_z, idx_z = torch.max(joint_heatmap_out,2)
             val_zy, idx_zy = torch.max(val_z,2)
