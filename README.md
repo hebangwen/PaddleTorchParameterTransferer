@@ -19,7 +19,7 @@ PyTorch weights can be downloaded from the source repository.
 There is a difference between the pytorch model output heatmap and the transferred paddlepaddle model output heatmap. 
 Detail information can be shown by running `heatmap_compare.py` or `resnet_compare.py`.
 
-| model | heatmap_diff |
-| :---: | :--: |
-| interhand | 0.0157 |
-| resnet | 0.000181 |
+| model | heatmap_diff | coord_diff|
+| :---: | :--: | :--: |
+| interhand | 0.01076 | 0.00021 | 
+| resnet | 0.000181 | |

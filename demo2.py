@@ -45,13 +45,12 @@ if __name__ == '__main__':
 
     # prepare input image
     transform = transforms.ToTensor()
-    img_path = 'demo/256.jpg'
+    img_path = 'input.jpg'
     original_img = cv2.imread(img_path)
     original_img_height, original_img_width = original_img.shape[:2]
 
     # prepare bbox
-    # bbox = [69, 137, 165, 153] # xmin, ymin, width, height
-    bbox = [100, 220, 460, 150] # test2.jpg
+    bbox = [69, 137, 165, 153] # xmin, ymin, width, height
     bbox = process_bbox(bbox, (original_img_height, original_img_width, original_img_height))
     img, trans, inv_trans = generate_patch_image(original_img, bbox, False, 1.0, 0.0, cfg.input_img_shape)
     img = transform(img.astype(np.float32))/255
