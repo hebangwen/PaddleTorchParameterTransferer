@@ -39,7 +39,7 @@ if __name__ == '__main__':
     transform = _transforms.Compose([
         _transforms.ToTensor(),
     ])
-    img_path = 'input.jpg'
+    img_path = 'images/input.jpg'
     original_img = cv2.imread(img_path)
     original_img_height, original_img_width = original_img.shape[:2]
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     np.save("demo_coord.npy", joint_coord)
 
     # visualize joint coord in 2D space
-    filename = 'result_2d.jpg'
+    filename = 'images/result_2d.jpg'
     vis_img = original_img.copy()[:,:,::-1].transpose(2,0,1)
     vis_img = vis_keypoints(vis_img, joint_coord, joint_valid, skeleton, filename, save_path='.')
 

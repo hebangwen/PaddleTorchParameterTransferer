@@ -17,7 +17,7 @@ import torchvision.transforms as transforms
 from pth.common.config import cfg
 from pth.common.model import get_model
 from pth.common.utils.preprocessing import load_img, load_skeleton, process_bbox, generate_patch_image, transform_input_to_output_space, trans_point2d
-from pth.common.utils.vis import vis_keypoints, vis_3d_keypoints
+from pth.common.utils.vis import vis_keypoints, vis_3d_keypoints, vis_3d_keypoints_and_2d_image
 from pth.common.utils.transforms import pixel2cam
 
 
@@ -45,14 +45,14 @@ if __name__ == '__main__':
 
     # prepare input image
     transform = transforms.ToTensor()
-    img_path = 'input.jpg'
+    img_path = 'images/input.jpg'
     original_img = cv2.imread(img_path)
     original_img_height, original_img_width = original_img.shape[:2]
 
     # prepare bbox
-    bbox = [69, 137, 165, 153] # xmin, ymin, width, height
-    bbox = process_bbox(bbox, (original_img_height, original_img_width, original_img_height))
-    img, trans, inv_trans = generate_patch_image(original_img, bbox, False, 1.0, 0.0, cfg.input_img_shape)
+    bbox = [69, 137, 165, 153] # (input.jpg) xmin, ymin, width, height
+    pbbox = process_bbox(bbox.copy(), (original_img_height, original_img_width, original_img_height))
+    img, trans, inv_trans = generate_patch_image(original_img, pbbox, False, 1.0, 0.0, cfg.input_img_shape)
     img = transform(img.astype(np.float32))/255
     img = img[None,:,:,:]
 
@@ -93,9 +93,11 @@ if __name__ == '__main__':
     np.save("demo2_coord.npy", joint_coord)
 
     # visualize joint coord in 2D space
-    filename = 'result_2d.jpg'
+    filename = 'images/result_2d.jpg'
     vis_img = original_img.copy()[:,:,::-1].transpose(2,0,1)
     vis_img = vis_keypoints(vis_img, joint_coord, joint_valid, skeleton, filename, save_path='.')
 
     filename = 'result_3d'
     vis_3d_keypoints(joint_coord, joint_valid, skeleton, filename)
+
+    vis_3d_keypoints_and_2d_image(joint_coord, skeleton, bbox, vis_img)

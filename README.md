@@ -5,9 +5,11 @@
 Copy parameters from pytorch to paddlepaddle for [InterHand2.6M](https://github.com/facebookresearch/InterHand2.6M).
 PyTorch weights can be downloaded from the source repository.
 
-![output](output/vis/result_3d.png)
+![output](images/result_3d.png)
 
-![reult](result_2d.jpg)
+![result](images/result_2d.jpg)
+
+![2d&3d](images/Figure_1.png)
 
 `speed_test.py` uses paddlepaddle api to simulate `torch.gather`. speed differences between `concat`&`gather_nd` and `for-loop` shows below:
 
